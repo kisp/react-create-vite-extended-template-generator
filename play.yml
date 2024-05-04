@@ -120,7 +120,7 @@
 
     - name: Commit cleanup
       git_commit:
-        subject: "Simplify create-vite template"
+        subject: "Simplify create-vite template by removing files"
         body: |
           - Remove .css and .svg files
           - Reduce src/App.tsx to <h1>Hello React</h1>
