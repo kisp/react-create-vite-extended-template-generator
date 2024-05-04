@@ -30,6 +30,9 @@ jobs:
       - name: run playbook
         run: nix-shell --run ./bin/ci
 
+      - name: Clean for Upload artifact
+        run: git clean -fxd
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:

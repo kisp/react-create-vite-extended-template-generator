@@ -25,6 +25,18 @@
         chdir: my-app-template
         creates: .git
 
+    - git_config:
+        name: user.email
+        repo: my-app-template
+        scope: local
+        value: 'ci-user@example.com'
+
+    - git_config:
+        name: user.name
+        repo: my-app-template
+        scope: local
+        value: 'CI User'
+
     - name: First commit
       git_commit:
         commit_message: "My initial commit"
