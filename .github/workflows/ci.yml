@@ -30,11 +30,8 @@ jobs:
       - name: run playbook
         run: nix-shell --run ./bin/ci
 
-      - name: Archive artifacts
-        run: tar -czf my-app-template.tar.gz my-app-template
-
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: my-app-template-artifact
-          path: my-app-template.tar.gz
+          path: my-app-template
