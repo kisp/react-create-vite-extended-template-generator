@@ -7,3 +7,10 @@
         name: create-vite
         version: 5.2.3
         path: node_modules
+    - name: Delete package.json and package-lock.json created above
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - package.json
+        - package-lock.json
