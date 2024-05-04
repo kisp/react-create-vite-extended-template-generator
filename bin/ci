@@ -3,3 +3,5 @@
 set -euxo pipefail
 
 ansible-playbook play.yml -i localhost, -c local
+
+ansible-lint play.yml
