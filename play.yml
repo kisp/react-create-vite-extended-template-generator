@@ -2,6 +2,10 @@
 - name: My Play
   hosts: all
   gather_facts: false
+  vars:
+    app_name: my-app-template
+    create_vite_template: react-ts
+    create_vite_command: npx create-vite {{ app_name }} --template {{ create_vite_template }}
   tasks:
     - name: Install create-vite
       community.general.npm:
@@ -19,13 +23,13 @@
 
     - name: Run create-vite
       ansible.builtin.command:
-        cmd: npx create-vite my-app-template --template react-ts
-        creates: my-app-template
+        cmd: "{{ create_vite_command }}"
+        creates: "{{ app_name }}"
 
     - name: Run git init
       ansible.builtin.command:
         cmd: git init
-        chdir: my-app-template
+        chdir: "{{ app_name }}"
         creates: .git
       tags:
         - skip_ansible_lint
@@ -33,29 +37,29 @@
     - name: Add user name to git config
       community.general.git_config:
         name: user.name
-        repo: my-app-template
+        repo: "{{ app_name }}"
         scope: local
         value: 'CI User'
 
     - name: Add user email to git config
       community.general.git_config:
         name: user.email
-        repo: my-app-template
+        repo: "{{ app_name }}"
         scope: local
         value: 'ci-user@example.com'
 
     - name: First commit
       git_commit:
         commit_message: "My initial commit"
-        chdir: my-app-template
+        chdir: "{{ app_name }}"
 
     - name: Create file
       ansible.builtin.shell:
         cmd: "echo foo >blah"
-        chdir: my-app-template
+        chdir: "{{ app_name }}"
         creates: blah
 
     - name: Second commit
       git_commit:
         commit_message: "My initial commit 2"
-        chdir: my-app-template
+        chdir: "{{ app_name }}"
