@@ -1,7 +1,7 @@
 ---
 - name: My Play
   hosts: all
-  gather_facts: no
+  gather_facts: true
   tasks:
     - name: Install create-vite
       community.general.npm:
@@ -16,6 +16,6 @@
         - package.json
         - package-lock.json
     - name: Run create-vite
-      shell:
+      ansible.builtin.command:
         cmd: npx create-vite my-app-template --template react
         creates: my-app-template
