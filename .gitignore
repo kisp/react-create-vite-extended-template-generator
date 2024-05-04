@@ -1,3 +1,4 @@
 .vagrant
 *~
 my-app-template
+__pycache__

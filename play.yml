@@ -24,26 +24,30 @@
         cmd: git init
         chdir: my-app-template
         creates: .git
+      tags:
+        - skip_ansible_lint
 
-    - git_config:
-        name: user.email
-        repo: my-app-template
-        scope: local
-        value: 'ci-user@example.com'
-
-    - git_config:
+    - name: Add user name to git config
+      community.general.git_config:
         name: user.name
         repo: my-app-template
         scope: local
         value: 'CI User'
+
+    - name: Add user email to git config
+      community.general.git_config:
+        name: user.email
+        repo: my-app-template
+        scope: local
+        value: 'ci-user@example.com'
 
     - name: First commit
       git_commit:
         commit_message: "My initial commit"
         chdir: my-app-template
 
-    - name: create file
-      shell:
+    - name: Create file
+      ansible.builtin.shell:
         cmd: "echo foo >blah"
         chdir: my-app-template
         creates: blah
