@@ -7,6 +7,7 @@ pkgs.stdenv.mkDerivation rec {
 
   buildInputs = [
     pkgs.ansible
+    pkgs.ansible-lint
     pkgs.nodejs
   ];
 

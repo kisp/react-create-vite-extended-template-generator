@@ -28,4 +28,4 @@ jobs:
         run: nix-shell --run 'ansible --version'
 
       - name: run playbook
-        run: nix-shell --run 'ansible-playbook play.yml -i localhost, -c local'
+        run: nix-shell --run ci

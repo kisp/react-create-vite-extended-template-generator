@@ -1,6 +1,8 @@
 ---
 - hosts: all
   tasks:
-    - file:
-        path: foo.txt
-        state: touch
+    - name: Install create-vite
+      community.general.npm:
+        name: create-vite
+        version: 5.2.3
+        path: node_modules
