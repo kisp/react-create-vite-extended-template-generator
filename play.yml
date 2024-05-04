@@ -71,3 +71,13 @@
         cmd: npm run build && npm run lint
         chdir: "{{ app_name }}"
       changed_when: false
+
+      #
+      # Cleanup
+      #
+
+    - name: Ensure link rel="icon" href /vite.svg is absent from index.html
+      ansible.builtin.lineinfile:
+        path: "{{ app_name }}/index.html"
+        state: absent
+        regexp: '<link rel="icon" type="image/svg\+xml" href="/vite\.svg" />'
