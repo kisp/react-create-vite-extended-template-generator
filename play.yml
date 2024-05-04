@@ -5,7 +5,8 @@
   vars:
     app_name: my-app-template
     create_vite_template: react-ts
-    create_vite_command: npx create-vite {{ app_name }} --template {{ create_vite_template }}
+    create_vite_command: >
+      npx create-vite {{ app_name }} --template {{ create_vite_template }}
   tasks:
     - name: Install create-vite
       community.general.npm:
@@ -64,3 +65,9 @@
       git_commit:
         subject: "Run npm install and add package-lock.json"
         chdir: "{{ app_name }}"
+
+    - name: Run npm run build && npm run lint
+      ansible.builtin.shell:
+        cmd: npm run build && npm run lint
+        chdir: "{{ app_name }}"
+      changed_when: false

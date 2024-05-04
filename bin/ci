@@ -5,6 +5,9 @@ set -euxo pipefail
 # Run ansible-playbook
 ./bin/r
 
+# Run yamllint
+./bin/y
+
 # Run ansible-lint
 ./bin/l
 
