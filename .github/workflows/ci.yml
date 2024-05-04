@@ -1,0 +1,31 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+name: Test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ANSIBLE_FORCE_COLOR: "True"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=https://github.com/NixOS/nixpkgs/archive/c898ce22834cf40ea69adf6093755532df412102.tar.gz
+
+      - name: download shell env
+        run: nix-shell --run ls
+
+      - name: ansible version
+        run: nix-shell --run 'ansible --version'
+
+      - name: run playbook
+        run: nix-shell --run 'ansible-playbook play.yml -i localhost, -c local'
