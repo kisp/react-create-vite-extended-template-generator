@@ -10,4 +10,4 @@ build_job:
   script:
     - nix-shell --run ls
     - nix-shell --run 'ansible --version'
-    - nix-shell --run ci
+    - nix-shell --run ./bin/ci
