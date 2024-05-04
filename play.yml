@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: My Play
+  hosts: all
   tasks:
     - name: Install create-vite
       community.general.npm:
