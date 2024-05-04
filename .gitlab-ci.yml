@@ -1,0 +1,13 @@
+stages:
+  - build
+
+build_job:
+  stage: build
+  image: nixos/nix:latest
+  variables:
+    NIX_PATH: "nixpkgs=https://github.com/NixOS/nixpkgs/archive/c898ce22834cf40ea69adf6093755532df412102.tar.gz"
+    ANSIBLE_FORCE_COLOR: "True"
+  script:
+    - nix-shell --run ls
+    - nix-shell --run 'ansible --version'
+    - nix-shell --run 'ansible-playbook play.yml -i localhost, -c local'
