@@ -48,18 +48,19 @@
         scope: local
         value: 'ci-user@example.com'
 
-    - name: First commit
+    - name: Commit create-vite scaffold
       git_commit:
-        commit_message: "My initial commit"
+        subject: "Initial {{ create_vite_template }} scaffold with create-vite"
+        body: |
+          This was done by running:
+          {{ create_vite_command }}
         chdir: "{{ app_name }}"
 
-    - name: Create file
-      ansible.builtin.shell:
-        cmd: "echo foo >blah"
-        chdir: "{{ app_name }}"
-        creates: blah
+    - name: Run npm install
+      community.general.npm:
+        path: "{{ app_name }}"
 
-    - name: Second commit
+    - name: Commit npm install
       git_commit:
-        commit_message: "My initial commit 2"
+        subject: "Run npm install and add package-lock.json"
         chdir: "{{ app_name }}"
