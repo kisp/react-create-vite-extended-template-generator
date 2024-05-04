@@ -1,6 +1,7 @@
 ---
 - name: My Play
   hosts: all
+  gather_facts: no
   tasks:
     - name: Install create-vite
       community.general.npm:
@@ -14,3 +15,7 @@
       with_items:
         - package.json
         - package-lock.json
+    - name: Run create-vite
+      shell:
+        cmd: npx create-vite my-app-template --template react
+        creates: my-app-template

@@ -11,5 +11,6 @@ pkgs.mkShell {
     pkgs.emacsPackages.flycheck
     pkgs.emacsPackages.flycheck-yamllint
     pkgs.emacsPackages.nix-mode
+    pkgs.emacsPackages.modus-themes
   ];
 }
