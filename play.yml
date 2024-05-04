@@ -1,7 +1,7 @@
 ---
 - name: My Play
   hosts: all
-  gather_facts: true
+  gather_facts: false
   tasks:
     - name: Install create-vite
       community.general.npm:
@@ -17,5 +17,26 @@
         - package-lock.json
     - name: Run create-vite
       ansible.builtin.command:
-        cmd: npx create-vite my-app-template --template react
+        cmd: npx create-vite my-app-template --template react-ts
         creates: my-app-template
+    - name: Run git init
+      ansible.builtin.command:
+        cmd: git init
+        chdir: my-app-template
+        creates: .git
+
+    - name: First commit
+      git_commit:
+        commit_message: "My initial commit"
+        chdir: my-app-template
+
+    - name: create file
+      shell:
+        cmd: "echo foo >blah"
+        chdir: my-app-template
+        creates: blah
+
+    - name: Second commit
+      git_commit:
+        commit_message: "My initial commit 2"
+        chdir: my-app-template
