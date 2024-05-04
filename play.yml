@@ -8,6 +8,7 @@
         name: create-vite
         version: 5.2.3
         path: node_modules
+
     - name: Delete package.json and package-lock.json created above
       ansible.builtin.file:
         path: "{{ item }}"
@@ -15,10 +16,12 @@
       with_items:
         - package.json
         - package-lock.json
+
     - name: Run create-vite
       ansible.builtin.command:
         cmd: npx create-vite my-app-template --template react-ts
         creates: my-app-template
+
     - name: Run git init
       ansible.builtin.command:
         cmd: git init
