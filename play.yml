@@ -240,7 +240,7 @@
     - name: Put file App.test.tsx
       ansible.builtin.copy:
         content: |
-          import { test, expect } from "vitest";
+          import { describe, it, expect } from "vitest";
           import { render, screen } from "@testing-library/react";
           import App from "./App";
 
@@ -306,4 +306,96 @@
     - name: Commit Add Vitest and React Testing Library
       git_commit:
         subject: "Add Vitest and React Testing Library"
+        chdir: "{{ app_name }}"
+
+    #
+    # Tailwind CSS
+    #
+
+    - name: Install libraries for Tailwind CSS
+      my_npm:
+        name: "{{ item }}"
+        path: "{{ app_name }}/node_modules"
+        save_dev: true
+      with_items:
+        - tailwindcss
+        - postcss
+        - autoprefixer
+
+    - name: Run npx tailwindcss init -p
+      ansible.builtin.command:
+        cmd: npx tailwindcss init -p
+        chdir: "{{ app_name }}"
+        creates: tailwind.config.js
+
+    - name: Put file tailwind.config.js
+      ansible.builtin.copy:
+        content: |
+          /** @type {import('tailwindcss').Config} */
+          export default {
+            content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+            theme: {
+              extend: {},
+            },
+            plugins: [],
+          };
+        dest: "{{ app_name }}/tailwind.config.js"
+        mode: "0644"
+
+    - name: Put file src/main.css
+      ansible.builtin.copy:
+        content: |
+          @tailwind base;
+          @tailwind components;
+          @tailwind utilities;
+        dest: "{{ app_name }}/src/main.css"
+        mode: "0644"
+
+    - name: Add import line for src/main.css to src/main.tsx
+      ansible.builtin.lineinfile:
+        path: "{{ app_name }}/src/main.tsx"
+        insertbefore: '^import'
+        firstmatch: true
+        line: 'import "./main.css";'
+
+    - name: Add some styling to our h1 in App
+      ansible.builtin.copy:
+        content: >
+          const title = "Hello React"
+
+          function App() {
+            return <h1 className="mb-5 py-5 text-5xl text-center text-white \
+          bg-gradient-to-r from-indigo-500 via-purple-500 shadow-xl \
+          hover:text-purple-800">{title}</h1>
+          }
+
+          export default App;
+        dest: "{{ app_name }}/src/App.tsx"
+        mode: "0644"
+
+    - name: Format files with prettier
+      prettier:
+        path: "{{ item }}"
+        chdir: "{{ app_name }}"
+        prettier_cmd: npx prettier
+      with_items:
+        - src/App.tsx
+        - src/main.tsx
+        - tailwind.config.js
+
+    - name: Run npm run prettier:ci
+      ansible.builtin.command:
+        cmd: npm run prettier:ci
+        chdir: "{{ app_name }}"
+      changed_when: false
+
+    - name: Run npm run build && npm run lint
+      ansible.builtin.shell:
+        cmd: npm run build && npm run lint
+        chdir: "{{ app_name }}"
+      changed_when: false
+
+    - name: Commit Add Tailwind CSS
+      git_commit:
+        subject: "Add Tailwind CSS"
         chdir: "{{ app_name }}"
