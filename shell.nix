@@ -15,6 +15,7 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     (import ./default.nix { inherit pkgs; }).buildInputs
     pkgs.yamllint
+    pkgs.ripgrep
     myEmacs
     pkgs.emacsPackages.magit
     pkgs.emacsPackages.yaml-mode
