@@ -16,6 +16,7 @@ pkgs.mkShell {
     (import ./default.nix { inherit pkgs; }).buildInputs
     pkgs.yamllint
     myEmacs
+    pkgs.emacsPackages.magit
     pkgs.emacsPackages.yaml-mode
     pkgs.emacsPackages.whitespace-cleanup-mode
     pkgs.emacsPackages.flycheck

@@ -27,4 +27,17 @@ Vagrant.configure("2") do |config|
       echo 'eval "$(direnv hook bash)"' >> ~/.bashrc
     SHELL
   end
+
+  if ENV["GIT_USER_NAME"] && ENV["GIT_USER_EMAIL"]
+    config.vm.provision "ansible" do |ansible|
+      git_user_name = ENV["GIT_USER_NAME"]
+      git_user_email = ENV["GIT_USER_EMAIL"]
+
+      ansible.playbook = ".vagrant-ansible-provisioner-git-config.yml"
+      ansible.raw_arguments = [
+        "-e git_user_name='#{git_user_name}'",
+        "-e git_user_email='#{git_user_email}'",
+      ]
+    end
+  end
 end
