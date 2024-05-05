@@ -167,6 +167,7 @@ class Npm(object):
         self.state = kwargs['state']
         self.no_optional = kwargs['no_optional']
         self.no_bin_links = kwargs['no_bin_links']
+        self.save_dev = kwargs['save_dev']
 
         if kwargs['executable']:
             self.executable = kwargs['executable'].split(' ')
@@ -191,6 +192,7 @@ class Npm(object):
                 registry=cmd_runner_fmt.as_opt_val('--registry'),
                 no_optional=cmd_runner_fmt.as_bool('--no-optional'),
                 no_bin_links=cmd_runner_fmt.as_bool('--no-bin-links'),
+                save_dev=cmd_runner_fmt.as_bool('--save_dev'),
             )
         )
 
@@ -212,7 +214,7 @@ class Npm(object):
             params['name_version'] = self.name_version if add_package_name else None
 
             with self.runner(
-                "exec_args global_ production ignore_scripts unsafe_perm name_version registry no_optional no_bin_links",
+                "exec_args global_ production ignore_scripts unsafe_perm name_version registry no_optional no_bin_links save_dev",
                 check_rc=check_rc, cwd=cwd
             ) as ctx:
                 rc, out, err = ctx.run(**params)
@@ -251,7 +253,10 @@ class Npm(object):
         return installed, missing
 
     def install(self):
-        return self._exec(['install'])
+        if self.save_dev:
+            return self._exec(['install', '--save-dev'])
+        else:
+            return self._exec(['install'])
 
     def ci_install(self):
         return self._exec(['ci'])
@@ -289,6 +294,7 @@ def main():
         ci=dict(default=False, type='bool'),
         no_optional=dict(default=False, type='bool'),
         no_bin_links=dict(default=False, type='bool'),
+        save_dev=dict(default=False, type='bool'),
     )
     arg_spec['global'] = dict(default=False, type='bool')
     module = AnsibleModule(
@@ -318,7 +324,8 @@ def main():
               unsafe_perm=module.params['unsafe_perm'],
               state=state,
               no_optional=module.params['no_optional'],
-              no_bin_links=module.params['no_bin_links'])
+              no_bin_links=module.params['no_bin_links'],
+              save_dev=module.params['save_dev'])
 
     changed = False
     if module.params['ci']:
