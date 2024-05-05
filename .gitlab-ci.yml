@@ -10,4 +10,5 @@ build_job:
   script:
     - nix-shell --run ls
     - nix-shell --run 'ansible --version'
+    - nix-shell --run 'chmod 755 .'
     - nix-shell --run ./bin/ci
