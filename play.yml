@@ -401,3 +401,48 @@
       git_commit:
         subject: "Add Tailwind CSS"
         chdir: "{{ app_name }}"
+
+    #
+    # Add prettier-plugin-tailwindcss
+    #
+
+    - name: Install prettier-plugin-tailwindcss
+      my_npm:
+        name: "{{ item }}"
+        path: "{{ app_name }}/node_modules"
+        save_dev: true
+      with_items:
+        - prettier-plugin-tailwindcss
+
+    - name: Add plugin to prettier config file
+      ansible.builtin.copy:
+        content: |
+          {
+            "arrowParens": "avoid",
+            "bracketSpacing": false,
+            "singleQuote": true,
+            "trailingComma": "all",
+            "semi": false,
+            "plugins": ["prettier-plugin-tailwindcss"]
+          }
+        dest: "{{ app_name }}/.prettierrc.json"
+        mode: "0644"
+
+    - name: Format files with prettier
+      prettier:
+        path: "{{ item }}"
+        chdir: "{{ app_name }}"
+        prettier_cmd: npx prettier
+      with_items:
+        - src/App.tsx
+
+    - name: Run npm run prettier:ci
+      ansible.builtin.command:
+        cmd: npm run prettier:ci
+        chdir: "{{ app_name }}"
+      changed_when: false
+
+    - name: Commit Add prettier-plugin-tailwindcss
+      git_commit:
+        subject: "Add prettier-plugin-tailwindcss"
+        chdir: "{{ app_name }}"
