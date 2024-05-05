@@ -11,5 +11,4 @@ build_job:
     - chmod 755 . # for ansible
     - nix-shell --run ls
     - nix-shell --run 'ansible --version'
-    - nix-shell --run 'bash --version'
-    - nix-shell --run ./bin/ci
+    - nix-shell --run 'bash bin/ci'
