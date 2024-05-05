@@ -241,7 +241,6 @@
     - name: Put file App.test.tsx
       ansible.builtin.copy:
         content: |
-          import { describe, it, expect } from "vitest";
           import { render, screen } from "@testing-library/react";
           import App from "./App";
 
@@ -282,9 +281,23 @@
         dest: "{{ app_name }}/src/setupTests.ts"
         mode: "0644"
 
+    - name: Allow describe and other test globals for tsc
+      ansible.builtin.lineinfile:
+        path: "{{ app_name }}/tsconfig.json"
+        insertafter: 'skipLibCheck'
+        firstmatch: false
+        line: '    "types": ["vitest/globals"],'
+        regexp: 'types.*vitest.*globals'
+
     - name: Run npm run test:ci
       ansible.builtin.command:
         cmd: npm run test:ci
+        chdir: "{{ app_name }}"
+      changed_when: false
+
+    - name: Run npm run build
+      ansible.builtin.command:
+        cmd: npm run build
         chdir: "{{ app_name }}"
       changed_when: false
 
