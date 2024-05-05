@@ -579,6 +579,20 @@
         - name: cypress:ci
           command: cypress run
 
+    - name: Format files with prettier
+      prettier:
+        path: "{{ item }}"
+        chdir: "{{ app_name }}"
+        prettier_cmd: npx prettier
+      with_items:
+        - cypress.config.js
+
+    - name: Run npm run prettier:ci
+      ansible.builtin.command:
+        cmd: npm run prettier:ci
+        chdir: "{{ app_name }}"
+      changed_when: false
+
     - name: Commit Add Cypress
       git_commit:
         subject: "Add Cypress"
