@@ -597,3 +597,75 @@
       git_commit:
         subject: "Add Cypress"
         chdir: "{{ app_name }}"
+
+    #
+    # Add GitHub CI
+    #
+
+    - name: Create directory .github/workflows
+      ansible.builtin.file:
+        dest: "{{ app_name }}/.github/workflows"
+        state: directory
+        mode: "0755"
+
+    - name: Put .github/workflows/test.yml
+      ansible.builtin.copy:
+        content: |
+          ---
+          name: Test
+          on: [push]
+
+          jobs:
+            test:
+              name: Test
+              runs-on: ubuntu-22.04
+              steps:
+                - uses: actions/checkout@v3
+                - name: Install Dependencies
+                  run: npm ci
+                - name: Unit Tests
+                  run: npm run test:ci
+                - name: E2E Tests
+                  uses: cypress-io/github-action@v6
+                  with:
+                    start: npm run dev
+                    wait-on: 'http://localhost:5173'
+                - name: eslint
+                  run: npm run lint
+                - name: build for production
+                  run: npm run build
+                - name: prettier
+                  run: npm run prettier:ci
+        dest: "{{ app_name }}/.github/workflows/test.yml"
+        mode: "0644"
+
+    - name: Commit Add GitHub CI
+      git_commit:
+        subject: "Add GitHub CI"
+        chdir: "{{ app_name }}"
+
+    #
+    # Add GitLab CI
+    #
+
+    - name: Put .gitlab-ci.yml
+      ansible.builtin.copy:
+        content: |
+          ---
+          test:
+            image: cypress/base:20.12.2
+            script:
+              - npm ci
+              - npm run test:ci
+              - npm run dev &
+              - npm run cypress:ci
+              - npm run lint
+              - npm run build
+              - npm run prettier:ci
+        dest: "{{ app_name }}/.gitlab-ci.yml"
+        mode: "0644"
+
+    - name: Commit Add GitLab CI
+      git_commit:
+        subject: "Add GitLab CI"
+        chdir: "{{ app_name }}"
