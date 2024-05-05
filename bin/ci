@@ -3,12 +3,12 @@
 set -euxo pipefail
 
 # Run ansible-playbook
-./bin/r
+bash bin/r
 
 # Run yamllint
-./bin/y
+bash bin/y
 
 # Run ansible-lint
-./bin/l
+bash bin/l
 
 echo DONE
