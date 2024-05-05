@@ -447,3 +447,139 @@
       git_commit:
         subject: "Add prettier-plugin-tailwindcss"
         chdir: "{{ app_name }}"
+
+    #
+    # Add Cypress
+    #
+
+    - name: Add cypress/screenshots to .gitignore
+      ansible.builtin.lineinfile:
+        path: "{{ app_name }}/.gitignore"
+        insertafter: '^.'
+        firstmatch: false
+        line: 'cypress/screenshots'
+
+    - name: Put cypress.config.js
+      ansible.builtin.copy:
+        content: |
+          import {defineConfig} from 'cypress'
+
+          export default defineConfig({
+            e2e: {
+              // eslint-disable-next-line no-unused-vars
+              setupNodeEvents(on, config) {
+              // implement node event listeners here
+              },
+              baseUrl: 'http://localhost:5173',
+            },
+          })
+        dest: "{{ app_name }}/cypress.config.js"
+        mode: "0644"
+
+    - name: Create directory cypress/e2e
+      ansible.builtin.file:
+        dest: "{{ app_name }}/cypress/e2e"
+        state: directory
+        mode: "0755"
+
+    - name: Create directory cypress/support
+      ansible.builtin.file:
+        dest: "{{ app_name }}/cypress/support"
+        state: directory
+        mode: "0755"
+
+    - name: Put cypress/e2e/smoke.cy.js
+      ansible.builtin.copy:
+        content: |
+          describe('Smoke Test', () => {
+            it('can view the home page', () => {
+              cy.visit('/')
+              cy.contains('Hello React')
+            })
+          })
+        dest: "{{ app_name }}/cypress/e2e/smoke.cy.js"
+        mode: "0644"
+
+    - name: Put cypress/support/commands.js
+      ansible.builtin.copy:
+        content: |
+          // ***********************************************
+          // This example commands.js shows you how to
+          // create various custom commands and overwrite
+          // existing commands.
+          //
+          // For more comprehensive examples of custom
+          // commands please read more here:
+          // https://on.cypress.io/custom-commands
+          // ***********************************************
+          //
+          //
+          // -- This is a parent command --
+          // Cypress.Commands.add('login', (email, password) => { ... })
+          //
+          //
+          // -- This is a child command --
+          // Cypress.Commands.add('drag', { prevSubject: 'element'},
+          //   (subject, options) => { ... })
+          //
+          //
+          // -- This is a dual command --
+          // Cypress.Commands.add('dismiss', { prevSubject: 'optional'},
+          //   (subject, options) => { ... })
+          //
+          //
+          // -- This will overwrite an existing command --
+          // Cypress.Commands.overwrite('visit',
+          //   (originalFn, url, options) => { ... })
+        dest: "{{ app_name }}/cypress/support/commands.js"
+        mode: "0644"
+
+    - name: Put cypress/support/e2e.js
+      ansible.builtin.copy:
+        content: |
+          // ***********************************************************
+          // This example support/e2e.js is processed and
+          // loaded automatically before your test files.
+          //
+          // This is a great place to put global configuration and
+          // behavior that modifies Cypress.
+          //
+          // You can change the location of this file or turn off
+          // automatically serving support files with the
+          // 'supportFile' configuration option.
+          //
+          // You can read more here:
+          // https://on.cypress.io/configuration
+          // ***********************************************************
+
+          // Import commands.js using ES2015 syntax:
+          import './commands'
+
+          // Alternatively you can use CommonJS syntax:
+          // require('./commands')
+        dest: "{{ app_name }}/cypress/support/e2e.js"
+        mode: "0644"
+
+    - name: Install cypress
+      my_npm:
+        name: "{{ item }}"
+        path: "{{ app_name }}/node_modules"
+        save_dev: true
+      with_items:
+        - cypress
+
+    - name: Add npm scripts for cypress
+      npm_scripts:
+        path: "{{ app_name }}/package.json"
+        name: "{{ item.name }}"
+        command: "{{ item.command }}"
+      with_items:
+        - name: cypress
+          command: cypress open
+        - name: cypress:ci
+          command: cypress run
+
+    - name: Commit Add Cypress
+      git_commit:
+        subject: "Add Cypress"
+        chdir: "{{ app_name }}"
