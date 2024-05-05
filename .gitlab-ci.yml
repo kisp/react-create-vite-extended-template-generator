@@ -8,6 +8,7 @@ build_job:
     NIX_PATH: "nixpkgs=https://github.com/NixOS/nixpkgs/archive/c898ce22834cf40ea69adf6093755532df412102.tar.gz"
     ANSIBLE_FORCE_COLOR: "True"
   script:
+    - chmod 755 . # for ansible
     - nix-shell --run ls
     - nix-shell --run 'ansible --version'
-    - nix-shell --run ./bin/ci
+    - nix-shell --run 'bash bin/ci'
