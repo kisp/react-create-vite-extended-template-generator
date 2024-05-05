@@ -173,6 +173,12 @@
     - name: Commit Add prettier
       git_commit:
         subject: "Add prettier"
+        body: |
+          - npm install --save-dev prettier
+          - Add .prettierrc.json
+          - Add npm scripts
+            - prettier
+            - prettier:ci
         chdir: "{{ app_name }}"
 
     - name: Format files with prettier
