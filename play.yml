@@ -134,3 +134,56 @@
         cmd: npm run build && npm run lint
         chdir: "{{ app_name }}"
       changed_when: false
+
+    #
+    # Prettier
+    #
+
+    - name: Install prettier
+      community.general.npm:
+        name: prettier
+        path: "{{ app_name }}/node_modules"
+
+    - name: Add prettier script
+      npm_scripts:
+        path: "{{ app_name }}/package.json"
+        name: prettier
+        command: prettier --write .
+
+    - name: Add prettier:ci script
+      npm_scripts:
+        path: "{{ app_name }}/package.json"
+        name: prettier:ci
+        command: prettier --check .
+
+    - name: Add prettier config file
+      ansible.builtin.copy:
+        content: |
+          {
+            "arrowParens": "avoid",
+            "bracketSpacing": false,
+            "singleQuote": true,
+            "trailingComma": "all",
+            "semi": false
+          }
+        dest: "{{ app_name }}/.prettierrc.json"
+        mode: "0644"
+
+    - name: Format files with prettier
+      prettier:
+        path: "{{ item }}"
+        chdir: "{{ app_name }}"
+        prettier_cmd: npx prettier
+      with_items:
+        - README.md
+        - src/main.tsx
+        - src/App.tsx
+        - .eslintrc.cjs
+        - vite.config.ts
+        - tsconfig.json
+
+    - name: Run npm run prettier:ci
+      ansible.builtin.command:
+        cmd: npm run prettier:ci
+        chdir: "{{ app_name }}"
+      changed_when: false
