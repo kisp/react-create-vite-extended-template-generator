@@ -358,6 +358,7 @@
         insertbefore: '^import'
         firstmatch: true
         line: 'import "./main.css";'
+        regexp: '^import.*main.*css'
 
     - name: Add some styling to our h1 in App
       ansible.builtin.copy:
