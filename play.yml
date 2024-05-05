@@ -236,6 +236,7 @@
         - "@testing-library/react"
         - jsdom
         - "@testing-library/jest-dom"
+        - "@testing-library/user-event"
 
     - name: Put file App.test.tsx
       ansible.builtin.copy:
