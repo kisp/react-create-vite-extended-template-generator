@@ -140,9 +140,10 @@
     #
 
     - name: Install prettier
-      community.general.npm:
+      my_npm:
         name: prettier
         path: "{{ app_name }}/node_modules"
+        save_dev: true
 
     - name: Add prettier script
       npm_scripts:
@@ -187,3 +188,8 @@
         cmd: npm run prettier:ci
         chdir: "{{ app_name }}"
       changed_when: false
+
+    - name: Commit Add prettier
+      git_commit:
+        subject: "Add prettier"
+        chdir: "{{ app_name }}"
