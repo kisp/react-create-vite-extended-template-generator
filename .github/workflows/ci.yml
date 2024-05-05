@@ -31,7 +31,7 @@ jobs:
         run: nix-shell --run ./bin/ci
 
       - name: Clean for Upload artifact
-        run: cd my-app-template && git clean -fxd && git gc --aggressive
+        run: cd my-app-template && git clean -fxd
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
