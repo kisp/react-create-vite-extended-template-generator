@@ -170,6 +170,11 @@
         dest: "{{ app_name }}/.prettierrc.json"
         mode: "0644"
 
+    - name: Commit Add prettier
+      git_commit:
+        subject: "Add prettier"
+        chdir: "{{ app_name }}"
+
     - name: Format files with prettier
       prettier:
         path: "{{ item }}"
@@ -189,7 +194,7 @@
         chdir: "{{ app_name }}"
       changed_when: false
 
-    - name: Commit Add prettier
+    - name: Commit Reformat all files with prettier
       git_commit:
-        subject: "Add prettier"
+        subject: "Reformat all files with prettier"
         chdir: "{{ app_name }}"
