@@ -111,6 +111,15 @@
         dest: "{{ app_name }}/src/App.tsx"
         mode: "0644"
 
+    - name: Put custom README.md
+      ansible.builtin.copy:
+        content: |
+          # React + TypeScript + Vite
+
+          Start a new React + Vite + JS/TS app with ease
+        dest: "{{ app_name }}/README.md"
+        mode: "0644"
+
     - name: Put .keep files for empty directories
       ansible.builtin.copy:
         content: ""
