@@ -541,9 +541,9 @@
 
           export default defineConfig({
             e2e: {
-              // eslint-disable-next-line no-unused-vars
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               setupNodeEvents(on, config) {
-              // implement node event listeners here
+                // implement node event listeners here
               },
               baseUrl: 'http://localhost:5173',
             },
@@ -654,6 +654,22 @@
         - name: cypress:ci
           command: cypress run
 
+    - name: Let eslint in npm lint script also check *.js files
+      npm_scripts:
+        path: "{{ app_name }}/package.json"
+        name: "{{ item.name }}"
+        command: "{{ item.command }}"
+      with_items:
+        - name: lint
+          command: "eslint . --ext js,ts,tsx \
+            --report-unused-disable-directives --max-warnings 0"
+
+    - name: Add globals to eslint config
+      ansible.posix.patch:
+        src: files/cypress-eslint.patch
+        dest: "{{ playbook_dir }}/{{ app_name }}/.eslintrc.cjs"
+        basedir: "{{ app_name }}"
+
     - name: Format files with prettier
       prettier:
         path: "{{ item }}"
@@ -661,10 +677,17 @@
         prettier_cmd: npx prettier
       with_items:
         - cypress.config.js
+        - .eslintrc.cjs
 
     - name: Run npm run prettier:ci
       ansible.builtin.command:
         cmd: npm run prettier:ci
+        chdir: "{{ app_name }}"
+      changed_when: false
+
+    - name: Run npm run lint
+      ansible.builtin.command:
+        cmd: npm run lint
         chdir: "{{ app_name }}"
       changed_when: false
 
