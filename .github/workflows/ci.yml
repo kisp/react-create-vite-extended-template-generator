@@ -1,3 +1,4 @@
+---
 on:
   push:
     branches:
@@ -6,10 +7,11 @@ on:
     branches:
       - main
 
-name: Test
+name: Build and deploy template
 
 jobs:
-  test:
+  build_template:
+    name: Build template
     runs-on: ubuntu-latest
     env:
       ANSIBLE_FORCE_COLOR: "True"
@@ -38,3 +40,28 @@ jobs:
         with:
           name: my-app-template-artifact
           path: my-app-template
+
+  deploy:
+    name: Deploy to template repository
+    runs-on: ubuntu-latest
+    concurrency: deploy-group
+    needs: build_template
+    if: ${{ github.ref == 'refs/heads/main' && needs.build_template.result == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download build output
+        uses: actions/download-artifact@v2
+        with:
+          name: my-app-template-artifact
+          path: my-app-template
+
+      - name: Push to template repository
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$DEPLOY_KEY" | ssh-add - >/dev/null
+          cd my-app-template
+          git remote add origin \
+            git@github.com:kisp/react-create-vite-extended-template.git
+          git push -f -v origin master
