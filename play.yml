@@ -424,6 +424,60 @@
         chdir: "{{ app_name }}"
 
     #
+    # clsx
+    #
+
+    - name: Install clsx
+      my_npm:
+        name: "{{ item }}"
+        path: "{{ app_name }}/node_modules"
+        save_dev: false
+      with_items:
+        - clsx
+
+    - name: Refactor adding classes in App
+      ansible.builtin.copy:
+        content: >
+          import {clsx} from 'clsx'
+
+          const title = 'Hello React'
+
+          const classes = clsx('mb-5 bg-blue-500 py-5 text-center text-5xl')
+
+          function App() {
+            return <h1 className={classes}>{title}</h1>
+          }
+
+          export default App
+        dest: "{{ app_name }}/src/App.tsx"
+        mode: "0644"
+
+    - name: Format files with prettier
+      prettier:
+        path: "{{ item }}"
+        chdir: "{{ app_name }}"
+        prettier_cmd: npx prettier
+      with_items:
+        - src/App.tsx
+
+    - name: Run npm run prettier:ci
+      ansible.builtin.command:
+        cmd: npm run prettier:ci
+        chdir: "{{ app_name }}"
+      changed_when: false
+
+    - name: Run npm run build && npm run lint
+      ansible.builtin.shell:
+        cmd: npm run build && npm run lint
+        chdir: "{{ app_name }}"
+      changed_when: false
+
+    - name: Commit Add clsx
+      git_commit:
+        subject: "Add clsx"
+        chdir: "{{ app_name }}"
+
+    #
     # Add prettier-plugin-tailwindcss
     #
 
@@ -444,7 +498,8 @@
             "singleQuote": true,
             "trailingComma": "all",
             "semi": false,
-            "plugins": ["prettier-plugin-tailwindcss"]
+            "plugins": ["prettier-plugin-tailwindcss"],
+            "tailwindFunctions": ["clsx"]
           }
         dest: "{{ app_name }}/.prettierrc.json"
         mode: "0644"
