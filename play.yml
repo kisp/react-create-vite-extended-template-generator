@@ -113,10 +113,7 @@
 
     - name: Put custom README.md
       ansible.builtin.copy:
-        content: |
-          # React + TypeScript + Vite
-
-          Start a new React + Vite + JS/TS app with ease
+        src: files/README.md
         dest: "{{ app_name }}/README.md"
         mode: "0644"
 
